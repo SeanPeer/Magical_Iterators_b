@@ -9,13 +9,13 @@ namespace ariel
     class MagicalContainer
     {
     private:
-        vector<int> container;         
-        vector<int *> prime_container; 
-        size_t container_size;         
-        size_t prime_size;            
+        vector<int> container;
+        vector<int *> prime_container;
+        size_t container_size;
+        size_t prime_size;
 
         // Helper function to check if a number is prime
-        bool isPrime(int num) const
+        bool static isPrime(int num) 
         {
             if (num <= 1)
             {
@@ -37,18 +37,16 @@ namespace ariel
         }
 
         // Copy constructor
-        MagicalContainer(const MagicalContainer &other)
+        MagicalContainer(const MagicalContainer &other) : container(other.container), container_size(other.container_size),
+                                                          prime_container(other.prime_container), prime_size(other.prime_size)
+
         {
-            container = other.container;
-            container_size = other.container_size;
-            prime_container = other.prime_container;
-            prime_size = other.prime_size;
         }
 
         // Destructor
         ~MagicalContainer()
         {
-            for (int* it : prime_container)
+            for (int *it : prime_container)
             {
                 delete it;
             }
@@ -101,7 +99,7 @@ namespace ariel
                 if (isPrime(element))
                 {
                     // if yes - find it and delete it from prime vector
-                    vector<int *>::iterator prime_position = find(prime_container.begin(), prime_container.end(), &element); 
+                    vector<int *>::iterator prime_position = find(prime_container.begin(), prime_container.end(), &element);
                     prime_container.erase(prime_position);
                     prime_size--;
                 }
@@ -133,9 +131,9 @@ namespace ariel
         class AscendingIterator
         {
         private:
-            MagicalContainer *magic_container; 
-            size_t current_iterator;              
-            size_t container_size;             
+            MagicalContainer *magic_container;
+            size_t current_iterator;
+            size_t container_size;
 
         public:
             AscendingIterator(MagicalContainer &mag_con) : magic_container(&mag_con), current_iterator(0), container_size(mag_con.container.size())
@@ -143,7 +141,7 @@ namespace ariel
             }
 
             // Copy constructor
-            AscendingIterator(const AscendingIterator &other) : magic_container(other.magic_container), current_iterator(other.current_iterator)
+            AscendingIterator(const AscendingIterator &other) : magic_container(other.magic_container), current_iterator(other.current_iterator), container_size(other.container_size)
             {
             }
 
@@ -152,7 +150,6 @@ namespace ariel
             {
             }
 
-    
             AscendingIterator begin()
             {
                 return AscendingIterator(*magic_container);
@@ -164,7 +161,6 @@ namespace ariel
                 return it;
             }
 
-
             // Assignment operator
             AscendingIterator &operator=(const AscendingIterator &other)
             {
@@ -172,14 +168,13 @@ namespace ariel
                 {
                     throw std::runtime_error("Iterators are pointing to different containers");
                 }
-                else
+
+                if (this != &other)
                 {
-                    if (this != &other)
-                    {
-                        magic_container = other.magic_container;
-                        current_iterator = other.current_iterator;
-                    }
+                    magic_container = other.magic_container;
+                    current_iterator = other.current_iterator;
                 }
+
                 return *this;
             }
 
@@ -203,7 +198,7 @@ namespace ariel
                 return magic_container == other.magic_container && current_iterator < other.current_iterator;
             }
 
-            //Reference operator
+            // Reference operator
             int operator*() const
             {
                 return magic_container->container[current_iterator];
@@ -224,8 +219,8 @@ namespace ariel
         class SideCrossIterator
         {
         private:
-            MagicalContainer *magic_container; 
-            size_t current_iterator;              
+            MagicalContainer *magic_container;
+            size_t current_iterator;
 
         public:
             SideCrossIterator(MagicalContainer &container) : magic_container(&container), current_iterator(0)
@@ -290,7 +285,7 @@ namespace ariel
                 {
                     throw std::runtime_error("Cannot increment iterator beyond the container size");
                 }
-                if (current_iterator < mid_index) //First half of the vector
+                if (current_iterator < mid_index) // First half of the vector
                 {
                     current_iterator = magic_container->container_size - current_iterator - 1; // Go to the parallel at the other side
                 }
@@ -315,14 +310,13 @@ namespace ariel
                 {
                     throw std::runtime_error("Iterators are pointing to different containers");
                 }
-                else
+
+                if (this != &other)
                 {
-                    if (this != &other)
-                    {
-                        magic_container = other.magic_container;
-                        current_iterator = other.current_iterator;
-                    }
+                    magic_container = other.magic_container;
+                    current_iterator = other.current_iterator;
                 }
+
                 return *this;
             }
         };
@@ -330,8 +324,8 @@ namespace ariel
         class PrimeIterator
         {
         private:
-            MagicalContainer *magic_container;      
-            size_t prime_iterator;                  
+            MagicalContainer *magic_container;
+            size_t prime_iterator;
 
         public:
             PrimeIterator(MagicalContainer &container) : magic_container(&container), prime_iterator(0)
@@ -353,7 +347,6 @@ namespace ariel
             {
             }
 
-
             PrimeIterator begin()
             {
                 return *this;
@@ -365,7 +358,6 @@ namespace ariel
                 return it;
             }
 
-
             // Equality operators
             bool operator==(const PrimeIterator &other) const
             {
@@ -376,7 +368,6 @@ namespace ariel
                 return !(*this == other);
             }
 
-
             // Greater than operator
             bool operator>(const PrimeIterator &other) const
             {
@@ -386,7 +377,6 @@ namespace ariel
             {
                 return magic_container == other.magic_container && prime_iterator < other.prime_iterator;
             }
-
 
             // Reference operator
             int operator*() const
@@ -399,9 +389,10 @@ namespace ariel
             {
                 if (magic_container != other.magic_container)
                 {
-                    throw std::runtime_error("Iterators are pointing to different containers");
+                    throw runtime_error("Iterators are pointing to different containers");
                 }
-                else if (this != &other)
+                
+                if (this != &other)
                 {
                     magic_container = other.magic_container;
                     prime_iterator = other.prime_iterator;
